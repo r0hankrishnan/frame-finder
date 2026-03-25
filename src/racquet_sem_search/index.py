@@ -1,0 +1,3 @@
+class RacquetIndex:
+    def __init__(self):
+        ...
