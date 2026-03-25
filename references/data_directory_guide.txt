@@ -31,3 +31,6 @@ DATA DIRECTORY GUIDE
                 - String tension is measured in lbs
         - Removed old version of converted columns
         - Standardized columns names to `racquet_{feature}`    
+
+5. data/interim/racquets_desc_llm_input_03_25_26.csv
+6. data/interim/racquets_desc_llm_output_v1_03_25_26.csv

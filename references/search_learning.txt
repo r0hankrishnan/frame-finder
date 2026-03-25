@@ -1,0 +1,9 @@
+========================================================================
+DATA DICTIONARY
+========================================================================
+
+"Hybrid Search: Combining Semantic and Keyword Approaches for Enhanced Information Retrieval"
+- https://medium.com/google-cloud/hybrid-search-combining-semantic-and-keyword-approaches-for-enhanced-information-retrieval-6a7c046c89ea
+
+"Mastering the Art of Search System: A Comprehensive Guide"
+- https://marescas.medium.com/mastering-the-art-of-search-systems-a-comprehensive-guide-354c82651732
