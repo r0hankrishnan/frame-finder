@@ -1,0 +1,33 @@
+========================================================================
+DATA DIRECTORY GUIDE
+========================================================================
+
+1. data/raw/racquets_raw_02_14_26.csv
+    - The raw dataset generated from scraping TW's website
+
+2. data/interim/racquets_staging_03_25_26.csv
+    - `racquets_raw_02_14_26.csv` with the following changes:
+        - Removed all racuets with no name or URL
+        - Brand name extracted into its own column
+        - Product SKU extracted from URL and used for ID column
+        - Removed all racquets containing the word "Junior" in their name
+        - Removed all columns with more than 95% NA values
+
+4. data/interim/racquets_cleaned_03_25_26.csv
+    - `racquets_staging_03_25_26.csv` with the following changes:
+        - Columns converted from str to float:
+            - Head Size -> racquet_head_size_sq_in
+            - Length -> racquet_length_in
+            - Strung Weight -> racquet_strung_weight_oz
+            - Balance -> racquet_balance_in & racquet_balance_HH_HL
+                - Note that negative values in racquet_balance_HH_HL
+                represent "head heavy" racquet balances
+            - Stiffness -> racquet_stiffness
+            - Beam Width -> racquet_avg_beam_width
+                - Beam width is measured in mm
+            - String Pattern -> racquet_mains & racquet_crosses
+            - String Tension -> racquet_tension_lower 
+            & racquet_tension_upper
+                - String tension is measured in lbs
+        - Removed old version of converted columns
+        - Standardized columns names to `racquet_{feature}`    

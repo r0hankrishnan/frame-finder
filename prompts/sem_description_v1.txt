@@ -1,0 +1,57 @@
+# sem_description_v1
+# Purpose: Normalize descriptions for semantic search
+# Input: id + raw description
+# Output: CSV with semantic_description
+# Notes: Focus on playability, remove marketing fluff 
+# PROMPT:
+
+I am uploading a CSV file of tennis racquets.
+
+Your task is to process the ENTIRE file and return a new CSV file with one additional column called `semantic_description`.
+
+Each row contains a `racquet_description` field with a mix of useful playability information and marketing language.
+
+## Objective
+
+Rewrite each `racquet_description` into a concise, neutral, semantically useful description focused ONLY on:
+
+* how the racquet plays (power, control, spin, maneuverability, stability, forgiveness)
+* how it feels (stiff, plush, dampened, responsive, etc.)
+* what type of player it suits (beginner/intermediate/advanced, baseliner/all-court/net player)
+
+## Remove
+
+* marketing fluff (e.g., “legendary”, “stands in a class by itself”)
+* brand storytelling or promotional phrasing
+* repetitive or generic filler
+* technology names unless they directly describe performance or feel
+
+## Rules (STRICT)
+
+* Process EVERY row in the file (no skipping)
+* Preserve the EXACT row order
+* Preserve all original columns unchanged
+* Add only one new column: `semantic_description`
+* Each output row must correspond EXACTLY to its input row
+* Do NOT drop or reorder rows
+* Do NOT hallucinate or invent new information
+* If `racquet_description` is missing or empty, set `semantic_description` to an empty string
+* Keep each rewritten description to 2–4 sentences max
+* Use neutral, standardized language (not promotional)
+
+## Critical Validation Step
+
+Before returning the result:
+
+* Verify that the number of rows in the output CSV EXACTLY matches the input CSV
+* Verify that row order is unchanged
+* Verify that each row has a corresponding `semantic_description`
+
+## Output
+
+Return ONLY a downloadable CSV file with the added `semantic_description` column.
+Do NOT return partial results.
+Do NOT summarize.
+Do NOT include explanations.
+
+The input CSV is attached.

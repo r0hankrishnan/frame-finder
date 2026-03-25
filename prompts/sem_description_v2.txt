@@ -1,0 +1,84 @@
+# sem_description_v2
+# Purpose: Normalize descriptions for semantic search
+# Input: id + raw description
+# Output: JSON with semantic_description
+# Notes: Focus on playability, remove marketing fluff, only use Python 
+    for I/O and row tracking, use "" for descriptions with nothing to extract
+# PROMPT:
+
+I am uploading a CSV file of tennis racquets.
+
+Your job is to return a new CSV with one added column: `semantic_description`.
+
+This is a row-by-row language task, not a regex-cleaning task.
+
+## Required workflow
+
+You must process the file in two separate layers:
+
+### Layer 1: Python/file handling
+Use Python only to:
+- read the CSV
+- preserve exact row order
+- preserve all original columns unchanged
+- append exactly one new column called `semantic_description`
+- verify that the output row count exactly matches the input row count
+- write the final CSV
+
+### Layer 2: Language rewriting
+For EACH row, you must actually read the full `racquet_description` text and rewrite it into a concise, neutral, semantically useful summary.
+
+Do NOT use regex, keyword substitution, templated text cleanup, or heuristic text scrubbing as the main method.
+
+This must be a true row-by-row rewrite of every description.
+
+## Objective
+
+Rewrite each `racquet_description` so that it focuses only on:
+- how the racquet plays (power, control, spin, maneuverability, stability, forgiveness)
+- how it feels (stiff, plush, muted, crisp, responsive, dampened, etc.)
+- what type of player it suits (beginner/intermediate/advanced, baseliner/all-court/net player)
+
+## Remove
+- marketing fluff
+- brand storytelling
+- promo language
+- repetitive filler
+- technology names unless they directly describe performance or feel
+
+## Strict rules
+- Process EVERY row in the file
+- Do not skip any row
+- Do not stop early
+- Do not sample
+- Do not summarize only part of the file
+- Do not drop or reorder rows
+- Do not alter existing columns
+- Add only one new column: `semantic_description`
+- Each output row must correspond exactly to its input row
+- If you cannot find anything to extract from the description, write empty quotes for that row
+
+## Quality rules for `semantic_description`
+- concise but specific
+- neutral tone
+- no hype language
+- no invented claims
+- no generic filler
+- should sound useful for semantic search
+- ideally 2–4 sentences max
+- there should be NO missing values for any row
+
+## Execution requirements
+Work through the entire file in as many internal batches as needed, but do not stop until all rows are completed.
+
+Before returning the final CSV, verify:
+- input row count = output row count
+- every row has a `semantic_description`
+- original order is unchanged
+
+Return:
+1. the completed CSV file
+2. a brief note confirming the input and output row counts
+
+Do not return partial results, previews, samples, or the first N rows. The task is incomplete unless all rows are processed.
+If token limits make direct full-file rewriting difficult, you must still complete the task by iterating through the rows programmatically and generating rewritten text for every row before writing the final CSV.

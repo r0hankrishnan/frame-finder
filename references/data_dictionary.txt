@@ -1,0 +1,30 @@
+========================================================================
+DATA DICTIONARY
+========================================================================
+
+- racquet_id: SKU of racquet (extracted from product URL)
+- racquet_url: URL to racquet's product page on TW website
+- racquet_name: Name of racquet
+- racquet_brand: Brand of racquet
+- racquet_img: URL to image of racquet on TW listing page
+- racquet_rating: Rating (1-5 continuous) -> NA if no ratings
+- racquet_price: Price in dollars
+- racquet_description: Marketing description of racquet
+- racquet_swingweight: Swingweight of racquet in ounces
+- racquet_composition: Material composition of racquet
+- racquet_power_level: Racquet power (['Low-Medium', nan, 'Medium', 'Low', 'Medium-High', 'High'])
+- racquet_stroke_style: What type of stroke is best suited for the racquet (['Medium-Full', nan, 'Medium', 'Full', 'Compact-Medium', 'Compact','Long'])
+- racquet_swing_speed: What level of swing speed is best suited for the racquet (['Medium-Fast', nan, 'Medium', 'Fast', 'Slow-Moderate', 'Slow', 'Moderate-Fast'])
+- racquet_colors: Colors of racquet
+- racquet_grip_type: Grip type of racquet (e.g. Leather)
+- racquet_head_size_sq_in: Head size of racquet in square inches
+- racquet_length_in: Length of racquet in inches
+- racquet_strung_weight_oz: Total weight of racquet (including strings) in ounces
+- racquet_balance_in: Balance point measured from butt cap of the racquet in inches
+- racquet_balance_HH_HL: Descibes how close balance point is to handle compared to center point (negative if head heavy -> farther away from handle)
+- racquet_stiffness: Measurement describing how much a racquet frame bends upon ball impact
+- racquet_avg_beam_width: Average of beam width measured at 3 spots on a racquet (inches)
+- racquet_mains: Number of mains on the racquet
+- racquet_crosses: Number of cross on the racquet
+- racquet_tension_lower: Lower recommend bound of string tension for racquet
+- racquet_tension_upper: Upper recommend bound of string tension for racquet

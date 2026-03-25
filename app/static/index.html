@@ -1,0 +1,768 @@
+<!-- AI is great at CSS unlike me -->
+ <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Racquet Finder — Tennis Warehouse</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy: #1a2e4a;
+      --navy-dark: #111e30;
+      --navy-light: #243d5e;
+      --orange: #e8540a;
+      --orange-hover: #c94508;
+      --offwhite: #f5f5f3;
+      --surface: #ffffff;
+      --surface-soft: #f7f9fc;
+      --border: #dde0e6;
+      --text: #1a2e4a;
+      --muted: #6b7280;
+      --muted-light: #9aa3af;
+      --shadow-lg: 0 18px 60px rgba(17, 30, 48, 0.18);
+      --shadow-md: 0 8px 28px rgba(26, 46, 74, 0.08);
+      --shadow-sm: 0 4px 14px rgba(26, 46, 74, 0.05);
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background:
+        radial-gradient(circle at top, rgba(232, 84, 10, 0.08), transparent 28%),
+        linear-gradient(to bottom, #eef2f7 0%, var(--offwhite) 26%, var(--offwhite) 100%);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    header {
+      background: rgba(17, 30, 48, 0.92);
+      backdrop-filter: blur(12px);
+      padding: 0 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 60px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+    }
+
+    .logo-mark {
+      width: 30px;
+      height: 30px;
+      background: var(--orange);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 13px;
+      color: white;
+      letter-spacing: -0.5px;
+      box-shadow: 0 8px 20px rgba(232, 84, 10, 0.35);
+    }
+
+    .logo-text {
+      font-size: 0.92rem;
+      font-weight: 600;
+      color: white;
+      letter-spacing: 0.01em;
+    }
+
+    .logo-text span {
+      color: var(--orange);
+    }
+
+    .header-badge {
+      font-size: 0.66rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+    }
+
+    .hero {
+      padding: 4.75rem 1.5rem 2.75rem;
+    }
+
+    .hero-inner {
+      max-width: 980px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--orange);
+      margin-bottom: 1rem;
+    }
+
+    .hero-eyebrow::before,
+    .hero-eyebrow::after {
+      content: "";
+      display: block;
+      width: 20px;
+      height: 1px;
+      background: rgba(232, 84, 10, 0.45);
+    }
+
+    .hero h1 {
+      font-size: clamp(2.4rem, 5vw, 4.4rem);
+      font-weight: 700;
+      line-height: 1.04;
+      letter-spacing: -0.04em;
+      color: var(--navy-dark);
+      max-width: 860px;
+      margin: 0 auto 1rem;
+    }
+
+    .hero h1 span {
+      color: var(--orange);
+    }
+
+    .hero-sub {
+      max-width: 680px;
+      margin: 0 auto 2rem;
+      font-size: 1.02rem;
+      line-height: 1.7;
+      color: var(--muted);
+    }
+
+    .search-shell {
+      max-width: 860px;
+      margin: 0 auto;
+      background: rgba(255,255,255,0.8);
+      border: 1px solid rgba(255,255,255,0.6);
+      box-shadow: var(--shadow-lg);
+      border-radius: 22px;
+      padding: 1rem;
+      backdrop-filter: blur(12px);
+    }
+
+    .search-wrap {
+      position: relative;
+      display: flex;
+      gap: 0.85rem;
+      align-items: center;
+    }
+
+    .search-input {
+      flex: 1;
+      min-width: 0;
+      padding: 1.15rem 1.2rem;
+      font-size: 0.98rem;
+      font-family: 'Inter', sans-serif;
+      border: 1px solid transparent;
+      border-radius: 16px;
+      background: var(--surface);
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      box-shadow: inset 0 0 0 1px rgba(26,46,74,0.04);
+    }
+
+    .search-input:focus {
+      border-color: rgba(232, 84, 10, 0.35);
+      box-shadow: 0 0 0 4px rgba(232, 84, 10, 0.09);
+    }
+
+    .search-input::placeholder {
+      color: #a0a8b5;
+    }
+
+    .search-btn {
+      border: none;
+      background: var(--orange);
+      color: white;
+      padding: 1rem 1.3rem;
+      border-radius: 14px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.02em;
+      cursor: pointer;
+      transition: transform 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+      white-space: nowrap;
+      box-shadow: 0 10px 24px rgba(232, 84, 10, 0.28);
+    }
+
+    .search-btn:hover {
+      background: var(--orange-hover);
+      transform: translateY(-1px);
+    }
+
+    .search-btn:active {
+      transform: translateY(0);
+    }
+
+    .search-hints {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 0.55rem;
+      margin-top: 1rem;
+    }
+
+    .hint-chip {
+      border: 1px solid rgba(26,46,74,0.08);
+      background: rgba(255,255,255,0.9);
+      color: var(--navy-light);
+      font-size: 0.76rem;
+      font-weight: 500;
+      border-radius: 999px;
+      padding: 0.48rem 0.8rem;
+      cursor: pointer;
+      transition: border-color 0.15s ease, transform 0.15s ease, background 0.15s ease;
+    }
+
+    .hint-chip:hover {
+      border-color: rgba(232, 84, 10, 0.3);
+      background: #fff7f3;
+      transform: translateY(-1px);
+    }
+
+    .results-section {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 1rem 1.5rem 3.5rem;
+    }
+
+    .results-header {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem;
+      margin-bottom: 1.1rem;
+    }
+
+    .results-title {
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted-light);
+      margin-bottom: 0.35rem;
+    }
+
+    .results-summary {
+      font-size: 1rem;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .results-summary strong {
+      color: var(--navy-dark);
+    }
+
+    .query-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      background: #fff3ed;
+      border: 1px solid #f6c4a7;
+      color: var(--orange-hover);
+      border-radius: 999px;
+      padding: 0.45rem 0.8rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .results-grid {
+      display: grid;
+      gap: 1rem;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.96);
+      border: 1px solid rgba(26,46,74,0.08);
+      border-radius: 20px;
+      padding: 1.25rem 1.25rem 1.15rem;
+      box-shadow: var(--shadow-sm);
+      transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(26,46,74,0.14);
+      box-shadow: var(--shadow-md);
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 1rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .card-name {
+      font-size: 1.08rem;
+      font-weight: 700;
+      color: var(--navy);
+      line-height: 1.25;
+      margin-bottom: 0.2rem;
+    }
+
+    .card-brand {
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .card-right {
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .card-price {
+      font-size: 1.12rem;
+      font-weight: 700;
+      color: var(--orange);
+      margin-bottom: 0.18rem;
+    }
+
+    .card-skill {
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .card-specs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-bottom: 0.8rem;
+    }
+
+    .spec-tag {
+      background: var(--surface-soft);
+      border: 1px solid rgba(26,46,74,0.06);
+      border-radius: 999px;
+      padding: 0.38rem 0.7rem;
+      font-size: 0.73rem;
+      font-weight: 600;
+      color: var(--navy-light);
+    }
+
+    .card-desc {
+      font-size: 0.87rem;
+      line-height: 1.68;
+      color: var(--muted);
+      margin-bottom: 0.95rem;
+    }
+
+    .relevance-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .rel-label {
+      font-size: 0.64rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #a7b0bd;
+      width: 54px;
+      flex-shrink: 0;
+    }
+
+    .rel-bar-bg {
+      flex: 1;
+      height: 6px;
+      background: #eceff3;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+
+    .rel-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--orange), #f48a4a);
+      transition: width 0.35s ease;
+    }
+
+    .rel-pct {
+      font-size: 0.74rem;
+      font-weight: 700;
+      color: var(--orange);
+      width: 40px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    .state-box {
+      text-align: center;
+      padding: 4.25rem 1.25rem;
+      border: 1px dashed rgba(26,46,74,0.12);
+      border-radius: 22px;
+      background: rgba(255,255,255,0.62);
+      color: var(--muted);
+    }
+
+    .state-icon {
+      font-size: 2.4rem;
+      margin-bottom: 0.8rem;
+      opacity: 0.7;
+    }
+
+    .state-title {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 0.45rem;
+    }
+
+    .state-copy {
+      font-size: 0.92rem;
+      line-height: 1.65;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    .loading-row {
+      display: flex;
+      gap: 0.75rem;
+      margin-bottom: 1rem;
+    }
+
+    .loading-pill {
+      height: 10px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, rgba(232,84,10,0.16), rgba(26,46,74,0.08), rgba(232,84,10,0.16));
+      background-size: 200% 100%;
+      animation: shimmer 1.1s linear infinite;
+    }
+
+    .loading-pill.one { width: 140px; }
+    .loading-pill.two { width: 86px; }
+
+    @keyframes shimmer {
+      0% { background-position: 200% 0; }
+      100% { background-position: -200% 0; }
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem 1.5rem 2.5rem;
+      font-size: 0.74rem;
+      color: #a0a9b6;
+    }
+
+    footer strong {
+      color: var(--orange);
+    }
+
+    @media (max-width: 720px) {
+      header {
+        padding: 0 1rem;
+      }
+
+      .header-badge {
+        display: none;
+      }
+
+      .hero {
+        padding-top: 3.25rem;
+      }
+
+      .search-shell {
+        padding: 0.85rem;
+        border-radius: 18px;
+      }
+
+      .search-wrap {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .search-btn {
+        width: 100%;
+      }
+
+      .results-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .card-top {
+        flex-direction: column;
+      }
+
+      .card-right {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <a class="logo" href="#">
+      <div class="logo-mark">TW</div>
+      <span class="logo-text">Tennis <span>Warehouse</span></span>
+    </a>
+    <span class="header-badge">Racquet Finder · Demo</span>
+  </header>
+
+  <section class="hero">
+    <div class="hero-inner">
+      <p class="hero-eyebrow">Conversational Racquet Search</p>
+      <h1>Just describe your game. <span>We’ll handle the rest.</span></h1>
+      <p class="hero-sub">
+        Search the way you’d talk to a racquet expert: playing style, feel, budget, arm comfort, power,
+        control, spin — whatever matters to you.
+      </p>
+
+      <div class="search-shell">
+        <div class="search-wrap">
+          <input
+            id="searchInput"
+            class="search-input"
+            type="text"
+            autocomplete="off"
+            placeholder="e.g. I want something arm-friendly with easy depth and a little more control"
+          />
+          <button class="search-btn" onclick="runSearch()">Find Racquets</button>
+        </div>
+
+        <div class="search-hints">
+          <button class="hint-chip" onclick="useExample('arm-friendly racquet for an intermediate baseliner')">Arm-friendly baseline frame</button>
+          <button class="hint-chip" onclick="useExample('spin-friendly racquet with easy power under $220')">Spin + easy power</button>
+          <button class="hint-chip" onclick="useExample('control-oriented racquet for advanced players')">Advanced control racquet</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="results-section">
+    <div class="results-header">
+      <div>
+        <div class="results-title">Results</div>
+        <div id="resultsSummary" class="results-summary">
+          Showing a demo result set so you can review the card design.
+        </div>
+      </div>
+      <div id="queryPill" style="display:none" class="query-pill"></div>
+    </div>
+
+    <div id="results" class="results-grid"></div>
+  </main>
+
+  <footer>
+    Powered by semantic search &nbsp;·&nbsp; <strong>Tennis Warehouse</strong> Racquet Finder Demo
+  </footer>
+
+  <script>
+    const RACQUETS = [
+      { name:"Wilson Blade 98 v8", brand:"Wilson", price:249, weight:305, balance:"Head Light", headSize:98, stiffness:62, skill:"Advanced", desc:"Precision and control meet aggression. The Blade 98 rewards players who generate their own pace with a dense string pattern and responsive layup." },
+      { name:"Babolat Pure Strike 100", brand:"Babolat", price:219, weight:300, balance:"Head Light", headSize:100, stiffness:71, skill:"Intermediate", desc:"Built for flat hitters who demand precision from the baseline. A stiff, stable frame that transmits energy cleanly on aggressive groundstrokes." },
+      { name:"Head Prestige MP", brand:"Head", price:229, weight:295, balance:"Head Light", headSize:95, stiffness:63, skill:"Advanced", desc:"A player's racquet in the truest sense. Loved by baseliners who prioritize touch and feel over raw power, with a classic thin beam." },
+      { name:"Yonex VCORE 98", brand:"Yonex", price:199, weight:305, balance:"Head Light", headSize:98, stiffness:65, skill:"Intermediate", desc:"Aggressive topspin from the baseline with an isometric head shape that expands the sweet spot without sacrificing control." },
+      { name:"Tecnifibre TF-X1 300", brand:"Tecnifibre", price:189, weight:300, balance:"Even", headSize:98, stiffness:68, skill:"Intermediate", desc:"A versatile all-court frame with enough stability for aggressive play. Good entry point for developing baseliners stepping up from game-improvement racquets." },
+      { name:"Prince Phantom 100P", brand:"Prince", price:209, weight:290, balance:"Head Light", headSize:100, stiffness:58, skill:"Advanced", desc:"An arm-friendly frame with a flexible feel uncommon at this level. Ideal for touch players who want a forgiving response without sacrificing precision." },
+      { name:"Dunlop CX 200", brand:"Dunlop", price:199, weight:305, balance:"Head Light", headSize:98, stiffness:62, skill:"Advanced", desc:"A control-oriented frame with a thin beam and dense string pattern. Popular among competitive players who want classic feel and workable spin." },
+      { name:"Wilson Clash 100 Pro", brand:"Wilson", price:239, weight:310, balance:"Head Light", headSize:100, stiffness:55, skill:"Intermediate", desc:"Wilson's most flexible frame. The Clash absorbs shock while maintaining a lively response — a great fit for players transitioning to heavier racquets." },
+      { name:"Babolat Pure Aero 98", brand:"Babolat", price:239, weight:298, balance:"Head Light", headSize:98, stiffness:70, skill:"Intermediate", desc:"The topspin machine. Aerodynamic frame geometry and a spin-friendly string pattern make the Pure Aero a weapon for heavy hitters." },
+      { name:"Head Speed MP", brand:"Head", price:219, weight:300, balance:"Head Light", headSize:100, stiffness:65, skill:"Intermediate", desc:"Fast and versatile, the Speed MP is designed for all-court players who want maneuverability without sacrificing stability on big shots." }
+    ];
+
+    let currentResults = [];
+
+    function seedRand(str) {
+      let h = 0;
+      for (let i = 0; i < str.length; i++) {
+        h = Math.imul(31, h) + str.charCodeAt(i) | 0;
+      }
+      return () => {
+        h ^= h << 13;
+        h ^= h >> 17;
+        h ^= h << 5;
+        return (h >>> 0) / 4294967296;
+      };
+    }
+
+    function scoreRacquet(racquet, query) {
+      const q = query.toLowerCase();
+      let score = 0.58;
+
+      const text = `${racquet.name} ${racquet.brand} ${racquet.balance} ${racquet.skill} ${racquet.desc}`.toLowerCase();
+
+      if (!q) {
+        return score;
+      }
+
+      if (/arm|comfort|comfortable|elbow|soft/.test(q) && racquet.stiffness <= 60) score += 0.18;
+      if (/control|precision|feel|touch/.test(q) && /control|precision|feel|touch/.test(text)) score += 0.14;
+      if (/power|powerful|depth|pop/.test(q) && /power|lively|weapon|energy/.test(text)) score += 0.12;
+      if (/spin|topspin/.test(q) && /spin|topspin/.test(text)) score += 0.15;
+      if (/advanced/.test(q) && racquet.skill === "Advanced") score += 0.12;
+      if (/intermediate/.test(q) && racquet.skill === "Intermediate") score += 0.12;
+      if (/light|lighter|maneuverable|faster/.test(q) && racquet.weight <= 300) score += 0.10;
+      if (/heavy|stable|plow/.test(q) && racquet.weight >= 305) score += 0.10;
+      if (/baseline|baseliner/.test(q) && /baseline|baseliner/.test(text)) score += 0.12;
+
+      const underMatch = q.match(/under\s*\$?(\d+)/);
+      if (underMatch) {
+        const cap = Number(underMatch[1]);
+        if (racquet.price <= cap) score += 0.14;
+        else score -= 0.08;
+      }
+
+      const rand = seedRand(`${query}-${racquet.name}`)();
+      score += rand * 0.08;
+
+      return Math.max(0.52, Math.min(score, 0.97));
+    }
+
+    function runSearch() {
+      const query = document.getElementById("searchInput").value.trim();
+
+      renderLoadingState();
+
+      setTimeout(() => {
+        const results = RACQUETS
+          .map(r => ({ ...r, score: scoreRacquet(r, query) }))
+          .sort((a, b) => b.score - a.score);
+
+        currentResults = results;
+        renderResults(results, query);
+      }, 220);
+    }
+
+    function useExample(text) {
+      document.getElementById("searchInput").value = text;
+      runSearch();
+    }
+
+    function renderLoadingState() {
+      const el = document.getElementById("results");
+      el.innerHTML = `
+        <div>
+          <div class="loading-row">
+            <div class="loading-pill one"></div>
+            <div class="loading-pill two"></div>
+          </div>
+          <div class="card">
+            <div class="card-top">
+              <div style="flex:1">
+                <div class="loading-pill" style="height:14px;width:240px;margin-bottom:10px;"></div>
+                <div class="loading-pill" style="height:10px;width:90px;"></div>
+              </div>
+              <div style="width:90px">
+                <div class="loading-pill" style="height:14px;width:60px;margin-left:auto;margin-bottom:10px;"></div>
+                <div class="loading-pill" style="height:10px;width:70px;margin-left:auto;"></div>
+              </div>
+            </div>
+            <div class="loading-pill" style="height:10px;width:100%;margin-bottom:10px;"></div>
+            <div class="loading-pill" style="height:10px;width:86%;margin-bottom:10px;"></div>
+            <div class="loading-pill" style="height:10px;width:74%;"></div>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderResults(results, query) {
+      const resultsSummary = document.getElementById("resultsSummary");
+      const queryPill = document.getElementById("queryPill");
+
+      if (query) {
+        resultsSummary.innerHTML = `Showing <strong>${results.length}</strong> demo matches for your search. In production, this would come from the FastAPI backend.`;
+        queryPill.style.display = "inline-flex";
+        queryPill.textContent = `Query: ${query}`;
+      } else {
+        resultsSummary.innerHTML = `Showing a <strong>${results.length}-racquet</strong> demo set so you can review the card design before wiring up the backend.`;
+        queryPill.style.display = "none";
+        queryPill.textContent = "";
+      }
+
+      renderResultsList(results);
+    }
+
+    function renderResultsList(results) {
+      const el = document.getElementById("results");
+
+      if (!results.length) {
+        el.innerHTML = `
+          <div class="state-box">
+            <div class="state-icon">🔍</div>
+            <div class="state-title">No racquets found</div>
+            <div class="state-copy">
+              Try broadening the description a bit. For the real version, this is where your backend result handling would show empty-state messaging.
+            </div>
+          </div>
+        `;
+        return;
+      }
+
+      el.innerHTML = results.map(r => {
+        const pct = Math.round(r.score * 100);
+        return `
+          <article class="card">
+            <div class="card-top">
+              <div>
+                <div class="card-name">${r.name}</div>
+                <div class="card-brand">${r.brand}</div>
+              </div>
+              <div class="card-right">
+                <div class="card-price">$${r.price}</div>
+                <div class="card-skill">${r.skill}</div>
+              </div>
+            </div>
+
+            <div class="card-specs">
+              <span class="spec-tag">${r.weight}g</span>
+              <span class="spec-tag">${r.balance}</span>
+              <span class="spec-tag">${r.headSize} sq in</span>
+              <span class="spec-tag">Stiffness ${r.stiffness}</span>
+            </div>
+
+            <p class="card-desc">${r.desc}</p>
+
+            <div class="relevance-row">
+              <span class="rel-label">Match</span>
+              <div class="rel-bar-bg">
+                <div class="rel-bar-fill" style="width:${pct}%"></div>
+              </div>
+              <span class="rel-pct">${pct}%</span>
+            </div>
+          </article>
+        `;
+      }).join("");
+    }
+
+    document.getElementById("searchInput").addEventListener("keydown", (e) => {
+      if (e.key === "Enter") runSearch();
+    });
+
+    // Seed initial dummy results on load
+    renderResults(
+      RACQUETS
+        .map(r => ({ ...r, score: scoreRacquet(r, "") }))
+        .sort((a, b) => b.score - a.score),
+      ""
+    );
+  </script>
+</body>
+</html>
