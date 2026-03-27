@@ -11,10 +11,11 @@ def validate_raw_columns(df: pd.DataFrame):
     Returns:
         bool: True if all expected columns exist, False if not.
     """
-    required = {'racquet_url', 'racquet_img', 'racquet_name', 'racquet_rating',
-       'racquet_price', 'racquet_description', 'head_size', 'length',
-       'strung_weight', 'balance', 'swingweight', 'stiffness', 'beam_width',
-       'composition', 'power_level', 'stroke_style', 'swing_speed',
+    required = {'racquet_url', 'racquet_img', 'racquet_name', 'racquet_rating', 
+                'racquet_rating_count', 'racquet_price', 'racquet_description', 
+                'head_size', 'length', 'strung_weight', 'balance', 'swingweight', 
+                'stiffness', 'beam_width', 'composition', 'power_level', 'stroke_style', 
+                'swing_speed',
        'racquet_colors', 'grip_type', 'string_pattern', 'string_tension',
        'age', 'weight', 'height', 'other', 'age_9-10', 'strung _weight'}
     
@@ -128,7 +129,7 @@ def extract_numeric_specs(df:pd.DataFrame) -> pd.DataFrame:
     
     # Extract racquet head size in sq. inches
     out["racquet_head_size_sq_in"] = (
-        out["Head Size"]\
+        out["head_size"]\
             .str.extract(r"(\d+\.?\d*)\s*(?:in²|in|sq\s*in)")\
                 .astype(float)
                 )
@@ -139,7 +140,7 @@ def extract_numeric_specs(df:pd.DataFrame) -> pd.DataFrame:
     
     # Extract racquet length in inches
     out["racquet_length_in"] = (
-        out["Length"]\
+        out["length"]\
             .str.extract(r"(\d+\.?\d*)\s*(?:in²|in|sq\s*in)")\
                 .astype(float)
                 )
@@ -150,7 +151,7 @@ def extract_numeric_specs(df:pd.DataFrame) -> pd.DataFrame:
     
     # Extract strung weight in ounces 
     out["racquet_strung_weight_oz"] = (
-        out["Strung Weight"]\
+        out["strung_weight"]\
             .str.extract(r"(\d+\.?\d*)\s*")\
                 .astype(float)
                 )
@@ -161,13 +162,13 @@ def extract_numeric_specs(df:pd.DataFrame) -> pd.DataFrame:
     
     # Extract racquet balance inches value
     out["racquet_balance_in"] = (
-        out["Balance"]\
+        out["balance"]\
             .str.extract(r"(\d+(?:\.\d+)?)\s*in\b")\
                 .astype(float)
                 )
     
     # Extract Balance number and label separately
-    extracted = out["Balance"].str.extract(
+    extracted = out["balance"].str.extract(
         r"(\d+(?:\.\d+)?)\s*(?:pts\s*)?(HL|HH|EB)\b"
     )
 
@@ -193,7 +194,7 @@ def extract_numeric_specs(df:pd.DataFrame) -> pd.DataFrame:
     ###############
     
     # Extract racquet stiffness
-    out["racquet_stiffness"] = out["Stiffness"]
+    out["racquet_stiffness"] = out["stiffness"]
     out['racquet_stiffness'] = out['racquet_stiffness'].replace('N/A (very low)', np.nan)
     out["racquet_stiffness"] = out["racquet_stiffness"].astype(float)
     
@@ -221,7 +222,7 @@ def extract_numeric_specs(df:pd.DataFrame) -> pd.DataFrame:
             return float("nan")
     
     # Extract and apply average beam width function
-    out["racquet_avg_beam_width"] = out["Beam Width"].apply(average_beam_width)
+    out["racquet_avg_beam_width"] = out["beam_width"].apply(average_beam_width)
     
     ###############
     # MAINS AND CROSSES
@@ -248,7 +249,7 @@ def extract_numeric_specs(df:pd.DataFrame) -> pd.DataFrame:
         return pd.Series([mains, crosses])
 
     # Extract main and cross values and apply to respective columns
-    out[["racquet_mains", "racquet_crosses"]] = out["String Pattern"].apply(extract_mains_crosses)
+    out[["racquet_mains", "racquet_crosses"]] = out["string_pattern"].apply(extract_mains_crosses)
     
     ###############
     # TENSION
@@ -268,7 +269,7 @@ def extract_numeric_specs(df:pd.DataFrame) -> pd.DataFrame:
         return pd.Series([lower, upper])
 
     # Extract and apply tension bounds to new columns
-    out[["racquet_tension_lower", "racquet_tension_upper"]] = out["String Tension"].apply(extract_tension_bounds)
+    out[["racquet_tension_lower", "racquet_tension_upper"]] = out["string_tension"].apply(extract_tension_bounds)
     
     return out
 
@@ -284,17 +285,17 @@ def finalize_columns(df:pd.DataFrame) -> pd.DataFrame:
     """
     
     out = df.copy()
-    drop_cols = ["Head Size", "Length", "Strung Weight", "Balance", 
-                 "Beam Width", "String Pattern", "String Tension", "Stiffness"]
+    drop_cols = ["head_size", "length", "strung_weight", "balance", 
+                "beam_width", "string_pattern", "string_tension", "stiffness"]
     
     out.drop(columns = drop_cols, inplace = True)
-    out.rename(columns = {"Swingweight":"racquet_swingweight",
-                                    "Composition":"racquet_composition",
-                                    "Power Level":"racquet_power",
-                                    "Stroke Style":"racquet_stroke_style",
-                                    "Swing Speed":"racquet_swing_speed",
-                                    "Racquet Colors":"racquet_colors",
-                                    "Grip Type":"racquet_grip"},
+    out.rename(columns = {"swingweight" : "racquet_swingweight",
+                                  "composition" : "racquet_composition",
+                                  "power_level" : "racquet_power_level",
+                                  "stroke_style" : "racquet_stroke_style",
+                                  "swing_speed" : "racquet_swing_speed",
+                                  "racquet_colors" : "racquet_colors",
+                                  "grip_type" : "racquet_grip_type"},
                         inplace = True)
     
     return out
@@ -315,6 +316,7 @@ def clean_raw_data(df:pd.DataFrame) -> pd.DataFrame:
     df = add_brand_column(df = df)
     df = add_id_column(df = df)
     df = remove_junior_racquets(df = df)
+    df = drop_majority_NA_cols(df = df)
     df = extract_numeric_specs(df = df)
     df = finalize_columns(df = df)
     

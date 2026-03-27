@@ -155,7 +155,21 @@ def get_racquet_info(
     # RATING
     rating_tag = racquet_soup.find("div", class_="review_agg")
     rating = rating_tag.get_text(strip=True) if isinstance(rating_tag, Tag) else None
-
+    
+    # RATING COUNT
+    rating_ct_tag = racquet_soup.find("a", id = "no-select")
+    rating_ct_tag_text = rating_ct_tag.get_text(strip = True) if isinstance (rating_ct_tag, Tag) else None
+    
+    if rating_ct_tag_text:
+        rating_ct = re.findall(r"\d+", rating_ct_tag_text)
+        
+        if len(rating_ct) == 0: # If racquet has no reviews -> text will be "Submit a Review" and re will return [] -> set those to None
+            rating_ct = None
+        else:
+            rating_ct = rating_ct[0]
+    else:
+        rating_ct = None
+    
     # PRICE
     price_tag = racquet_soup.find("span", class_="afterpay-full_price")
     price = price_tag.get_text(strip=True) if isinstance(price_tag, Tag) else None
@@ -174,6 +188,7 @@ def get_racquet_info(
         "racquet_img": image_url,
         "racquet_name": name,
         "racquet_rating": rating,
+        "racquet_rating_count": rating_ct,
         "racquet_price": price,
         "racquet_description": description,
     }
