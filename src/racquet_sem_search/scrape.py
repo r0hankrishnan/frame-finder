@@ -1,5 +1,3 @@
-from .config import BASE_URL, BRAND_PATHS, EXPECTED_SPEC_KEYS, SESSION
-
 import re
 import requests
 from urllib.parse import urljoin
@@ -9,9 +7,13 @@ import sys
 
 import pandas as pd
 
+from .config import BASE_URL, BRAND_PATHS, EXPECTED_SPEC_KEYS, SESSION
+
 
 def scrape_tw_racquets(
-    save_file: bool = False, save_path: str | None = None, verbose: bool = False
+    save_file: bool = False, save_path: str | None = None, 
+    save_html: bool = False, save_html_path: str | None = None,
+    verbose: bool = False
 ) -> pd.DataFrame:
     """Orchestration function that uses below functions to
     iteratively scrape each racquet's page on each brand page.
@@ -23,6 +25,13 @@ def scrape_tw_racquets(
     Returns:
         pd.DataFrame: Dataframe containing features for each scraped racquet
     """
+    # Early arg checks
+    if save_file and save_path is None:
+        raise ValueError(f"Incompatible args: save_file is set to True but save_path is None. Please set a save path.")
+    
+    if save_html and save_html_path is None:
+        raise ValueError(f"Incompatible args: save_html is set to True but save_html_path is None. Please set a save path for the HTML files.")
+
     rows: list[dict[str, object]] = []
 
     brand_urls = get_brand_urls()
@@ -60,6 +69,8 @@ def scrape_tw_racquets(
             rows.append({**info, **specs})  # Unpack info and specs then append
 
             racquet_counter += 1
+            
+            time.sleep(1.0) # wait 1 sec between fetching every racquet for politeness
 
         brand_counter += 1
 
@@ -173,16 +184,23 @@ def get_racquet_info(
     # PRICE
     price_tag = racquet_soup.find("span", class_="afterpay-full_price")
     price = price_tag.get_text(strip=True) if isinstance(price_tag, Tag) else None
-
-    # DESCRIPTION
-    container = racquet_soup.find("div", id="product_overview")
+    
+    # DESCRIPTION - TRY PRODUCT_CHARS FIRST THEN FALLBACK TO PRODUCT_OVERVIEW
     description = None
-
-    if isinstance(container, Tag):
-        paragraphs = container.find_all("p")
-        description = " ".join([p.get_text(" ", strip=True) for p in paragraphs])
-        description = description.strip()
-
+    
+    span = racquet_soup.find("span", attrs = {"id": "product_chars"})
+    if isinstance(span, Tag):
+        text = span.get_text(" ", strip = True)
+        description = text if text else None
+        
+    if description is None:
+        container = racquet_soup.find("div", attrs = {"id": "product_overview"})
+        
+        if isinstance(container, Tag):
+            paragraphs = container.find_all("p")
+            text = (" ".join([p.get_text(" ", strip = True) for p in paragraphs]))
+            description = text if text else None
+        
     return {
         "racquet_url": racquet_url,
         "racquet_img": image_url,
