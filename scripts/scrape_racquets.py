@@ -11,6 +11,9 @@ if __name__ == "__main__":
     RAW_DATA_PATH = DATA_DIR / "raw" / f"racquets_raw_{today_date}.csv"
     
     RAW_DATA_PATH.parent.mkdir(parents = True, exist_ok = True) # Make sure dirs exist
+    
+    SAVE_HTML_PATH = DATA_DIR / "raw" / "racquets_raw_html"
 
-    scrape_tw_racquets(save_file = True, save_path = str(RAW_DATA_PATH), 
+    scrape_tw_racquets(save_file = True, save_path = str(RAW_DATA_PATH),
+                       save_html = True, save_html_path = str(SAVE_HTML_PATH),
                        verbose = True)
