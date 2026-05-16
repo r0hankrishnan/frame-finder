@@ -1,0 +1,35 @@
+# sem_description_v2
+# Purpose: Normalize descriptions for semantic search
+# Input: id + raw description
+# Output: JSON with semantic_description
+# Notes: Switched to Claude, discussed specific in-chat chunking capabilities beforehand,
+    emphasized accuracy and discussed fallbacks in case process fails in chat
+# PROMPT:
+
+I have a CSV of 322 tennis racquet descriptions that I need cleaned. Each row has a racquet_id and a racquet_description field. The racquet_description field contains marketing copy from Tennis Warehouse — I need you to strip all the fluff and rewrite each one as a concise, feel-focused semantic description (2-4 sentences max) that captures how the racquet actually plays: things like stiffness, power level, arm-friendliness, control, spin, maneuverability, who it suits, and how it feels on contact. The output will be used to power a semantic search tool where players describe desired feel in plain English.
+
+**Accuracy is critical**. Only include information that is explicitly stated in the original description. Do not infer, extrapolate, or invent any feel or performance characteristics. If the original text does not mention arm-friendliness, do not include it. If it does not describe the power level, do not guess. Stay strictly within what the source text actually says.
+
+For descriptions that contain no usable feel or performance content — pure marketing filler with no substance — you can leave empty.
+
+Re-read these instructions before starting each new batch.
+
+Process this in batches of 40 rows at a time. After each batch, output the results as raw CSV rows in this format: 
+
+racquet_id,cleaned_description
+
+Wrap every field in double quotes to handle commas and line breaks safely.
+
+Wrap each batch output in a code block so I can copy it cleanly. After each batch explicitly state "Batch X complete. Rows Y–Z processed. Starting batch X+1." and then immediately continue to the next batch without waiting for me to respond. Do not stop between batches unless something goes wrong.
+
+If a row is missing or unparseable, output the racquet_id and original description with an empty string for the cleaned description and keep going.
+
+Once all 322 rows are done, confirm that the output row count exactly matches the input row count of 301 before telling me to compile the chunks.
+
+If the counts do not match, identify which rows are missing and process them before signing off.
+
+Here is the CSV:
+
+[After batched generation]
+
+Take batches 1-8 from above and concatenate them, with the proper heading, into one CSV file. **Do not make any changes to the contents of any of the batches**. You're only job is to join the batches together into one CSV file.
