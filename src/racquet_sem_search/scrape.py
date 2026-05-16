@@ -1,5 +1,6 @@
 import re
 import requests
+from pathlib import Path
 from urllib.parse import urljoin
 from bs4 import BeautifulSoup, Tag
 import time
@@ -32,6 +33,9 @@ def scrape_tw_racquets(
     if save_html and save_html_path is None:
         raise ValueError(f"Incompatible args: save_html is set to True but save_html_path is None. Please set a save path for the HTML files.")
 
+    if save_html and save_html_path is not None:
+        Path(save_html_path).mkdir(parents=True, exist_ok=True) # Make dir once check passes & only if save_html is True
+
     rows: list[dict[str, object]] = []
 
     brand_urls = get_brand_urls()
@@ -46,7 +50,7 @@ def scrape_tw_racquets(
         racquet_urls = get_racquet_urls(brand_url=brand_url)
         racquet_counter = 0
 
-        for racquet_url in get_racquet_urls(brand_url=brand_url):
+        for racquet_url in racquet_urls:
             (
                 print(f"Scraping racquet {racquet_counter + 1} of {len(racquet_urls)}")
                 if verbose
@@ -62,6 +66,11 @@ def scrape_tw_racquets(
                     file=sys.stderr,
                 )
                 continue
+            
+            if save_html and save_html_path is not None:
+                html_filename = racquet_url.split("/")[-1].replace(".html", "") + ".html"
+                html_path = Path(save_html_path) / html_filename
+                html_path.write_text(data = str(soup), encoding = "utf-8")
 
             info = get_racquet_info(racquet_soup=soup, racquet_url=racquet_url)
             specs = get_racquet_specs(racquet_soup=soup)
@@ -337,6 +346,6 @@ def _get_soup(url: str) -> BeautifulSoup:
             if attempt == 2:
                 raise
 
-            time.sleep(1.5 * (attempt + 1))
+            time.sleep(1.5 * (2 ** attempt))
 
     raise RuntimeError(f"Failed to fetch {url} contents")
