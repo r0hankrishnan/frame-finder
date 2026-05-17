@@ -1,6 +1,8 @@
 import requests
 
 BASE_URL: str = "https://www.tennis-warehouse.com/"
+
+# Go to Tennis Warehouse website and check listed racquet brands before running -> brand paths need to be manually set
 BRAND_PATHS: list[str] = [
     "Babolatracquets.html",
     "Wilsonracquets.html",
@@ -8,6 +10,7 @@ BRAND_PATHS: list[str] = [
     "YonexRacquets.html",
     "PrinceRacquets.html",
     "Tecnifibreracquets.html",
+    "Mizuno_Tennis_Racquets/catpage-MIZTEN.html",
     "DunlopRacquets.html",
     "VolklRacquets.html",
     "ProKennexracquets.html",
