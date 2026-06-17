@@ -1,8 +1,7 @@
 # racquet-sem-search
-
-**Hybrid search over tennis racquets** — combining structured filters with semantic search, built on scraped [Tennis Warehouse](https://www.tennis-warehouse.com/) data.
-
 > Work in progress
+> 
+**Hybrid search over tennis racquets** — combining structured filters with semantic search, built on scraped [Tennis Warehouse](https://www.tennis-warehouse.com/) data.
 
 ---
 
