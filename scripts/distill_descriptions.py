@@ -6,11 +6,12 @@ import csv
 import logging
 
 import pandas as pd
+from dotenv import load_dotenv
 
 logger = logging.getLogger(__name__)
 
 if __name__ == "__main__":
-    
+    load_dotenv()
     logging.basicConfig(
             level=logging.INFO,
             format="%(asctime)s — %(levelname)s — %(message)s"
