@@ -43,9 +43,11 @@ class AnthropicAdapter(LLMAdapter):
             output_format=DistilledDescriptionBatch,
             )
         
-        content = message.parsed_output.descriptions
-        
-        return content
+        if message.parsed_output is None:
+            logger.error("API call returned None. Something went wrong.")
+
+        assert message.parsed_output is not None, "API call returned None. Something went wrong."
+        return message.parsed_output.descriptions
     
 
 def build_batch_prompts(racquets_df: pd.DataFrame, batch_size: int = 10) -> list[str]:
