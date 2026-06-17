@@ -1,8 +1,14 @@
+import time
+import csv
+import logging
 from abc import ABC, abstractmethod
+from pathlib import Path
 
 import anthropic
-from pydantic import BaseModel
 import pandas as pd
+from pydantic import BaseModel
+
+logger = logging.getLogger(__name__)
 
 class DistilledDescriptionItem(BaseModel):
     racquet_id: str
@@ -63,7 +69,7 @@ def build_batch_prompts(racquets_df: pd.DataFrame, batch_size: int = 10) -> list
         
     Accuracy is critical. Only include information explicitly stated in the original description. Do not infer, extrapolate, or invent characteristics. If arm-friendliness is not mentioned, do not include it. If power level is not described, do not guess.
     
-    Keep each rewritten description to 2-4 sentences. If a description contains no usable feel or performance content, leave it empty.
+    Keep each rewritten description to 2-4 sentences. If a description contains no usable feel or performance content, return an empty string for that racquet's distilled_description field.
     
     Here are the racquets to process:""")
         
@@ -82,15 +88,58 @@ def build_batch_prompts(racquets_df: pd.DataFrame, batch_size: int = 10) -> list
         
     return batch_prompts
 
-def distill_descriptions(racquets_df: pd.DataFrame, llm_adapter: LLMAdapter) -> list[dict]: 
+def distill_descriptions(racquets_df: pd.DataFrame, llm_adapter: LLMAdapter, 
+                         partial_save_path: Path, batch_size: int = 10) -> list[DistilledDescriptionItem]: 
     """Takes in the cleaned racquet dataset and returns a list of dicts with each racquet's
     distilled description. 
 
     Args:
         racquets_df (pd.DataFrame): DataFrame of racquets
         llm_adapter (LLMAdapter): Apadater class (should be interchangeable to allow for testing different providers)
+        partial_save_path (Path): Path to save partial runs to.
+        batch_size (int): Default to 10. Parameter to pass to `build_batch_prompts`
 
     Returns:
         list[dict]: List of dicts where each dict is one row from racquets_df with keys racquet_id and distilled_description
     """
-    ...
+    
+    batched_prompts = build_batch_prompts(racquets_df=racquets_df, batch_size=batch_size)
+    distilled_desc_items = []
+    
+    # Add retry logic
+    for batch_num, prompt in enumerate(batched_prompts, start=1):
+        logger.info(f"Processing batch {batch_num} / {len(batched_prompts)}...")
+        for i in range(0,3): # Tries 3 times, breaks if fails 3 times
+            try:
+                distilled_descs = llm_adapter.complete(prompt=prompt) # Get distilled descs
+                
+            except Exception as e:
+                if i < 2:
+                    time.sleep(2 ** (i + 1))
+                    continue
+                
+                else:
+                    with open(partial_save_path / "partially_distilled_descs.csv", "w", newline="") as f:
+                        fieldnames = ["racquet_id", "distilled_description"]
+                        writer = csv.DictWriter(f, fieldnames=fieldnames)
+
+                        writer.writeheader()
+                        for item in distilled_desc_items:
+                            writer.writerow(item.model_dump())
+                    
+                    logger.error(f"Failed on batch {batch_num} after 3 attempts: {e}")
+                    raise Exception(f"Pipeline failed on batch {batch_num}. Partial results saved to {partial_save_path}.") 
+                     
+            else:
+                # Unpack into top-level list
+                distilled_desc_items.extend(distilled_descs)
+                time.sleep(1)
+                break
+    
+    if len(distilled_desc_items) != len(racquets_df):
+        msg = f"Row count mismatch: input had {len(racquets_df)} rows but got {len(distilled_desc_items)}."
+        logger.error(msg)
+        raise AssertionError(msg)
+    
+    return distilled_desc_items
+        
