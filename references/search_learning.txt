@@ -1,5 +1,5 @@
 ========================================================================
-DATA DICTIONARY
+LEARNING RESOURCES
 ========================================================================
 
 "Hybrid Search: Combining Semantic and Keyword Approaches for Enhanced Information Retrieval"
