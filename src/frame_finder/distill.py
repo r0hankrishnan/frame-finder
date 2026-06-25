@@ -89,8 +89,11 @@ def distill_descriptions(racquets_df: pd.DataFrame, llm_adapter: LLMAdapter, out
                 distilled_descs = distilled_batch.descriptions
                 
                 returned_ids = set(item.racquet_id for item in distilled_descs) # Check length + racquet_ids
-                if expected_ids != returned_ids:
-                    raise ValueError(f"ID mismatch on batch {batch_num}. Expected {expected_ids}, got {returned_ids}.")
+                
+                if expected_ids != returned_ids or len(expected_ids) != len(distilled_descs):
+                    msg = f"Batch {batch_num} mismatch. Expected {len(expected_ids)} unique IDs {expected_ids}, got {len(distilled_descs)} items with IDs {returned_ids}."
+                    logger.error(msg)
+                    raise ValueError(msg)
           
             except Exception as e:
                 if i < 2:
@@ -98,13 +101,7 @@ def distill_descriptions(racquets_df: pd.DataFrame, llm_adapter: LLMAdapter, out
                     continue
                 
                 else:
-                    with open(partial_save_path / "partially_distilled_descs.csv", "w", newline="") as f:
-                        fieldnames = ["racquet_id", "distilled_description"]
-                        writer = csv.DictWriter(f, fieldnames=fieldnames)
-
-                        writer.writeheader()
-                        for item in distilled_desc_items:
-                            writer.writerow(item.model_dump())
+                    _save_partial(items=distilled_desc_items, path=partial_save_path)
                     
                     logger.error(f"Failed on batch {batch_num} after 3 attempts: {e}")
                     raise Exception(f"Pipeline failed on batch {batch_num}. Partial results saved to {partial_save_path}.") 
@@ -116,8 +113,18 @@ def distill_descriptions(racquets_df: pd.DataFrame, llm_adapter: LLMAdapter, out
                 break
     
     if len(distilled_desc_items) != len(racquets_df):
+        _save_partial(items=distilled_desc_items, path=partial_save_path)
         msg = f"Row count mismatch: input had {len(racquets_df)} rows but got {len(distilled_desc_items)}."
         logger.error(msg)
         raise AssertionError(msg)
     
     return distilled_desc_items
+
+
+def _save_partial(items: list[DistilledDescriptionItem], path: Path) -> None:
+    with open(path / "partially_distilled_descs.csv", "w", newline="") as f:
+        fieldnames = ["racquet_id", "distilled_description"]
+        writer = csv.DictWriter(f, fieldnames=fieldnames)
+        writer.writeheader()
+        for item in items:
+            writer.writerow(item.model_dump())
