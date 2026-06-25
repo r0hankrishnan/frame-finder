@@ -3,7 +3,7 @@ requires = ["setuptools>=61.0"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "racquet-sem-search"
+name = "frame-finder"
 version = "0.1.0"
 requires-python = ">=3.9"
 dependencies = [
@@ -11,6 +11,9 @@ dependencies = [
     "pandas",
     "scikit-learn",
     "beautifulsoup4",
+    "anthropic",
+    "google-genai",
+    "pydantic"
 ]
 
 [tool.setuptools.packages.find]

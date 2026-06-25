@@ -67,7 +67,7 @@ def add_id_column(df: pd.DataFrame) -> pd.DataFrame:
     """
     out = df.copy()
     
-    out["racquet_id"] = out["racquet_url"].apply(lambda x: x.split("/")[::-1][0].split(".")[0].replace("descpage", ""))
+    out["racquet_id"] = out["racquet_url"].apply(lambda x: x.split("/")[::-1][0].split(".")[0].replace("descpageRCBAB-", ""))
 
     return out
 

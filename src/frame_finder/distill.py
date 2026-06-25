@@ -1,63 +1,31 @@
 import time
 import csv
 import logging
-from abc import ABC, abstractmethod
 from pathlib import Path
 
-import anthropic
+from frame_finder.adapters import LLMAdapter
+
 import pandas as pd
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
 
 class DistilledDescriptionItem(BaseModel):
-    racquet_id: str
-    distilled_description: str
+    racquet_id: str = Field(description = "The id of the racquet.")
+    distilled_description: str = Field(description = "The concise, feel-focused rewritten racquet description.")
     
 class DistilledDescriptionBatch(BaseModel):
-    descriptions: list[DistilledDescriptionItem]
-
-class LLMAdapter(ABC):
-    @abstractmethod
-    def complete(self, prompt: str) -> list[DistilledDescriptionItem]:
-        pass
-    
-class AnthropicAdapter(LLMAdapter):
-    def __init__(self):
-        self.client = anthropic.Anthropic()
+    descriptions: list[DistilledDescriptionItem] = Field(description = "An object containing a racquet_id and its corresponding rewritten description.")
         
-    def complete(self, prompt: str) -> list[DistilledDescriptionItem]:
-        """Generate a strucutred output completion from a given prompt.
-
-        Args:
-            prompt (str): Prompt (created from build_batch_prompt)
-
-        Returns:
-            list[DistilledDescriptionItem]: List of DistilledDescriptionItem objects. Each object should have
-            racquet_id and distilled_description. 
-        """
-        message = self.client.messages.parse(
-            model="claude-haiku-4-5-20251001", 
-            max_tokens=4096, 
-            messages=[{"role": "user", "content": prompt,}],
-            output_format=DistilledDescriptionBatch,
-            )
-        
-        if message.parsed_output is None:
-            logger.error("API call returned None. Something went wrong.")
-
-        assert message.parsed_output is not None, "API call returned None. Something went wrong."
-        return message.parsed_output.descriptions
-    
-
-def build_batch_prompts(racquets_df: pd.DataFrame, batch_size: int = 10) -> list[str]:
-    """Takes in the cleaned racquet dataset and returns a list of prompts of size batch_size.
+def build_batch_prompts(racquets_df: pd.DataFrame, batch_size: int = 10) -> list[tuple[str, set[str]]]:
+    """Takes in the cleaned racquet dataset and returns a list of paired prompts and expected racquet_ids 
+    of size batch_size.
     Args:
         racquets_df (pd.DataFrame): DataFrame of racquets
         batch_size (int): Default to 10. Size to batch df.
 
     Returns:
-        list[str]: List of strings where each string is the prompt for a batch from racquets_df. 
+        list[tuple[str, set[str]]]: List of pairs of prompt and racquet_id sets for each batch from racquet_df.
     
     """
     base_prompt = ("""You are helping build a semantic search tool for tennis racquets. Your job is to rewrite each racquet description into a concise, feel-focused summary that captures how the racquet actually plays.
@@ -75,7 +43,7 @@ def build_batch_prompts(racquets_df: pd.DataFrame, batch_size: int = 10) -> list
     
     Here are the racquets to process:""")
         
-    batch_prompts = []
+    batch_groups: list[tuple[str, set[str]]] = []
     
     for start in range (0, len(racquets_df), batch_size):
         chunk = racquets_df.iloc[start: start + batch_size][["racquet_id", "racquet_description"]]
@@ -85,12 +53,15 @@ def build_batch_prompts(racquets_df: pd.DataFrame, batch_size: int = 10) -> list
         for _, row in chunk.iterrows():
             batch_text += f"racquet_id: {row["racquet_id"]}\nracquet_description: {row["racquet_description"]}\n\n"
         
-        batch_prompt = base_prompt + "\n\n" + batch_text
-        batch_prompts.append(batch_prompt)
+        batch_prompt: str = base_prompt + "\n\n" + batch_text
+        batch_racquet_ids: set[str] = set(chunk["racquet_id"])
         
-    return batch_prompts
+        batch_group: tuple[str, set[str]] = (batch_prompt, batch_racquet_ids)
+        batch_groups.append(batch_group)
+        
+    return batch_groups
 
-def distill_descriptions(racquets_df: pd.DataFrame, llm_adapter: LLMAdapter, 
+def distill_descriptions(racquets_df: pd.DataFrame, llm_adapter: LLMAdapter, output_format: type[DistilledDescriptionBatch], 
                          partial_save_path: Path, batch_size: int = 10) -> list[DistilledDescriptionItem]: 
     """Takes in the cleaned racquet dataset and returns a list of dicts with each racquet's
     distilled description. 
@@ -105,16 +76,22 @@ def distill_descriptions(racquets_df: pd.DataFrame, llm_adapter: LLMAdapter,
         list[dict]: List of dicts where each dict is one row from racquets_df with keys racquet_id and distilled_description
     """
     
-    batched_prompts = build_batch_prompts(racquets_df=racquets_df, batch_size=batch_size)
+    batched_groups = build_batch_prompts(racquets_df=racquets_df, batch_size=batch_size)
     distilled_desc_items = []
     
     # Add retry logic
-    for batch_num, prompt in enumerate(batched_prompts, start=1):
-        logger.info(f"Processing batch {batch_num} / {len(batched_prompts)}...")
+    for batch_num, (prompt, expected_ids) in enumerate(batched_groups, start=1):
+        logger.info(f"Processing batch {batch_num} / {len(batched_groups)}...")
+        
         for i in range(0,3): # Tries 3 times, breaks if fails 3 times
             try:
-                distilled_descs = llm_adapter.complete(prompt=prompt) # Get distilled descs
+                distilled_batch = llm_adapter.complete(prompt=prompt, output_format=output_format) # Get distilled descs
+                distilled_descs = distilled_batch.descriptions
                 
+                returned_ids = set(item.racquet_id for item in distilled_descs) # Check length + racquet_ids
+                if expected_ids != returned_ids:
+                    raise ValueError(f"ID mismatch on batch {batch_num}. Expected {expected_ids}, got {returned_ids}.")
+          
             except Exception as e:
                 if i < 2:
                     time.sleep(2 ** (i + 1))
@@ -144,4 +121,3 @@ def distill_descriptions(racquets_df: pd.DataFrame, llm_adapter: LLMAdapter,
         raise AssertionError(msg)
     
     return distilled_desc_items
-        
