@@ -1,4 +1,4 @@
-from racquet_sem_search.scrape import scrape_tw_racquets
+from frame_finder.scrape import scrape_tw_racquets
 
 from pathlib import Path
 from datetime import date
