@@ -1,4 +1,5 @@
-from racquet_sem_search.distill import distill_descriptions, AnthropicAdapter
+from frame_finder.distill import distill_descriptions, DistilledDescriptionBatch
+from frame_finder.adapters import AnthropicAdapter
 
 from pathlib import Path
 from datetime import date
@@ -29,7 +30,8 @@ if __name__ == "__main__":
     anthropic_adapter = AnthropicAdapter()
     
     logger.info("Distilling descriptions...")
-    distilled_descs = distill_descriptions(racquets_df=racquets_df, llm_adapter=anthropic_adapter, partial_save_path=PARTIAL_SAVE_PATH)
+    distilled_descs = distill_descriptions(racquets_df=racquets_df, llm_adapter=anthropic_adapter, 
+                                           output_format=DistilledDescriptionBatch, partial_save_path=PARTIAL_SAVE_PATH)
     logger.info("Finished distilling!")
    
     with open(PARTIAL_SAVE_PATH / f"distilled_descriptions_{today_date}.csv", "w", newline="") as f:
