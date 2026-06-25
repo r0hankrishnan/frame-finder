@@ -21,12 +21,12 @@ if __name__ == "__main__":
     PROJECT_ROOT = Path(__file__).resolve().parents[1]
     DATA_DIR = PROJECT_ROOT / "data"
     PARTIAL_SAVE_PATH = DATA_DIR / "interim"
-    CLEANED_DATA_PATH = PARTIAL_SAVE_PATH / "racquets_cleaned_2026_05_16.csv" # should use argparse here
+    CLEANED_DATA_PATH = PARTIAL_SAVE_PATH / "racquets_cleaned_2026_06_24.csv" # should use argparse here
     
     today_date = date.today().strftime("%Y_%m_%d")
     
     racquets_df = pd.read_csv(CLEANED_DATA_PATH)
-    racquets_df = racquets_df.head(15) # Line to test script on 15 racquets
+    # racquets_df = racquets_df.head(15) # Line to test script on 15 racquets
     anthropic_adapter = AnthropicAdapter()
     
     logger.info("Distilling descriptions...")
