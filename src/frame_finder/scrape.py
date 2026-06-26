@@ -1,3 +1,5 @@
+"""Module to scrape racquet data from Tennis Warehouse."""
+
 import re
 import requests
 from pathlib import Path
@@ -12,9 +14,11 @@ from .config import BASE_URL, BRAND_PATHS, EXPECTED_SPEC_KEYS, SESSION
 
 
 def scrape_tw_racquets(
-    save_file: bool = False, save_path: str | None = None, 
-    save_html: bool = False, save_html_path: str | None = None,
-    verbose: bool = False
+    save_file: bool = False,
+    save_path: str | None = None,
+    save_html: bool = False,
+    save_html_path: str | None = None,
+    verbose: bool = False,
 ) -> pd.DataFrame:
     """Orchestration function that uses below functions to
     iteratively scrape each racquet's page on each brand page.
@@ -28,13 +32,19 @@ def scrape_tw_racquets(
     """
     # Early arg checks
     if save_file and save_path is None:
-        raise ValueError(f"Incompatible args: save_file is set to True but save_path is None. Please set a save path.")
-    
+        raise ValueError(
+            f"Incompatible args: save_file is set to True but save_path is None. Please set a save path."
+        )
+
     if save_html and save_html_path is None:
-        raise ValueError(f"Incompatible args: save_html is set to True but save_html_path is None. Please set a save path for the HTML files.")
+        raise ValueError(
+            f"Incompatible args: save_html is set to True but save_html_path is None. Please set a save path for the HTML files."
+        )
 
     if save_html and save_html_path is not None:
-        Path(save_html_path).mkdir(parents=True, exist_ok=True) # Make dir once check passes & only if save_html is True
+        Path(save_html_path).mkdir(
+            parents=True, exist_ok=True
+        )  # Make dir once check passes & only if save_html is True
 
     rows: list[dict[str, object]] = []
 
@@ -66,11 +76,13 @@ def scrape_tw_racquets(
                     file=sys.stderr,
                 )
                 continue
-            
+
             if save_html and save_html_path is not None:
-                html_filename = racquet_url.split("/")[-1].replace(".html", "") + ".html"
+                html_filename = (
+                    racquet_url.split("/")[-1].replace(".html", "") + ".html"
+                )
                 html_path = Path(save_html_path) / html_filename
-                html_path.write_text(data = str(soup), encoding = "utf-8")
+                html_path.write_text(data=str(soup), encoding="utf-8")
 
             info = get_racquet_info(racquet_soup=soup, racquet_url=racquet_url)
             specs = get_racquet_specs(racquet_soup=soup)
@@ -78,8 +90,8 @@ def scrape_tw_racquets(
             rows.append({**info, **specs})  # Unpack info and specs then append
 
             racquet_counter += 1
-            
-            time.sleep(1.0) # wait 1 sec between fetching every racquet for politeness
+
+            time.sleep(1.0)  # wait 1 sec between fetching every racquet for politeness
 
         brand_counter += 1
 
@@ -175,41 +187,45 @@ def get_racquet_info(
     # RATING
     rating_tag = racquet_soup.find("div", class_="review_agg")
     rating = rating_tag.get_text(strip=True) if isinstance(rating_tag, Tag) else None
-    
+
     # RATING COUNT
-    rating_ct_tag = racquet_soup.find("a", id = "no-select")
-    rating_ct_tag_text = rating_ct_tag.get_text(strip = True) if isinstance (rating_ct_tag, Tag) else None
-    
+    rating_ct_tag = racquet_soup.find("a", id="no-select")
+    rating_ct_tag_text = (
+        rating_ct_tag.get_text(strip=True) if isinstance(rating_ct_tag, Tag) else None
+    )
+
     if rating_ct_tag_text:
         rating_ct = re.findall(r"\d+", rating_ct_tag_text)
-        
-        if len(rating_ct) == 0: # If racquet has no reviews -> text will be "Submit a Review" and re will return [] -> set those to None
+
+        if (
+            len(rating_ct) == 0
+        ):  # If racquet has no reviews -> text will be "Submit a Review" and re will return [] -> set those to None
             rating_ct = None
         else:
             rating_ct = rating_ct[0]
     else:
         rating_ct = None
-    
+
     # PRICE
     price_tag = racquet_soup.find("span", class_="afterpay-full_price")
     price = price_tag.get_text(strip=True) if isinstance(price_tag, Tag) else None
-    
+
     # DESCRIPTION - TRY PRODUCT_CHARS FIRST THEN FALLBACK TO PRODUCT_OVERVIEW
     description = None
-    
-    span = racquet_soup.find("span", attrs = {"id": "product_chars"})
+
+    span = racquet_soup.find("span", attrs={"id": "product_chars"})
     if isinstance(span, Tag):
-        text = span.get_text(" ", strip = True)
+        text = span.get_text(" ", strip=True)
         description = text if text else None
-        
+
     if description is None:
-        container = racquet_soup.find("div", attrs = {"id": "product_overview"})
-        
+        container = racquet_soup.find("div", attrs={"id": "product_overview"})
+
         if isinstance(container, Tag):
             paragraphs = container.find_all("p")
-            text = (" ".join([p.get_text(" ", strip = True) for p in paragraphs]))
+            text = " ".join([p.get_text(" ", strip=True) for p in paragraphs])
             description = text if text else None
-        
+
     return {
         "racquet_url": racquet_url,
         "racquet_img": image_url,
@@ -346,6 +362,6 @@ def _get_soup(url: str) -> BeautifulSoup:
             if attempt == 2:
                 raise
 
-            time.sleep(1.5 * (2 ** attempt))
+            time.sleep(1.5 * (2**attempt))
 
     raise RuntimeError(f"Failed to fetch {url} contents")
