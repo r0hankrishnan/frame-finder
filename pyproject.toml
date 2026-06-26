@@ -13,7 +13,9 @@ dependencies = [
     "beautifulsoup4",
     "anthropic",
     "google-genai",
-    "pydantic"
+    "pydantic",
+    "sentence-transformers",
+    "bm25s",
 ]
 
 [tool.setuptools.packages.find]
