@@ -1,7 +1,7 @@
 # frame-finder
 > Work in progress
 > 
-**Hybrid search over tennis racquets** — combining structured filters with semantic search, built on scraped [Tennis Warehouse](https://www.tennis-warehouse.com/) data.
+**Hybrid search over tennis racquets** built on scraped [Tennis Warehouse](https://www.tennis-warehouse.com/) data.
 
 ---
 
@@ -15,7 +15,7 @@ Finding the right tennis racquet is harder than it looks. Specs like weight, hea
 - **Semantic search** — retrieve racquets by embedding and comparing natural language descriptions
 - **LLM-distilled descriptions** — raw TW marketing copy is condensed into neutral, semantically rich blurbs for better embedding quality
 
-The goal is a search experience closer to asking a knowledgeable stringer than scrolling a spec sheet.
+The goal is a search experience closer to asking a knowledgeable racquet associate than scrolling a spec sheet.
 
 ---
 

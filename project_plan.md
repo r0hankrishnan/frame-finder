@@ -19,6 +19,12 @@ Then, from the returned JSON object, the code runs a semantic search on teh sema
 [x] Create distillation script
 [x] Run distillation
 [x] Validate distilled descriptions
+[x] Create `embed.py`
+    [x] Instantiate embedding model
+    [x] Create functions to track ids alongside text embeddings
+[x] Create `bm25.py`
+    [x] Create functions to instantiate retriever
+    [x] Set up docstrings to explain that retriver returns ids not text
 [ ] Create parse_query.py
     [ ] Create pydantic model
     [ ] Create orchestration function
