@@ -32,3 +32,53 @@ def merge_racquet_data(
         raise ValueError(msg)
 
     return merged
+
+
+def create_keyword_text(merged_df: pd.DataFrame) -> pd.DataFrame:
+    """Creates a keyword_text column by concatenating racquet_name, the three
+    small categorical spec fields, and distilled_description. This column is
+    the corpus text indexed by BM25 for lexical search.
+
+    Must run after distillation output has been merged into racquet_df, since
+    distilled_description is a required input column.
+
+    Args:
+        racquet_df (pd.DataFrame): DataFrame that must already contain
+        racquet_name, racquet_power_level, racquet_stroke_style,
+        racquet_swing_speed, and distilled_description columns.
+
+    Raises:
+        ValueError: Raised if any required column is missing.
+
+    Returns:
+        pd.DataFrame: Copy of racquet_df with a new keyword_text column appended.
+    """
+    required_cols = [
+        "racquet_name",
+        "racquet_power_level",
+        "racquet_stroke_style",
+        "racquet_swing_speed",
+        "distilled_description",
+    ]
+
+    missing = [col for col in required_cols if col not in merged_df.columns]
+
+    if missing:
+        msg = f"The merged_df is missing required column(s): {missing}"
+        logger.error(msg)
+        raise ValueError(msg)
+
+    out = merged_df.copy()
+    out["keyword_text"] = (
+        out["racquet_name"].fillna("")
+        + " "
+        + out["racquet_power_level"].fillna("")
+        + " "
+        + out["racquet_stroke_style"].fillna("")
+        + " "
+        + out["racquet_swing_speed"].fillna("")
+        + " "
+        + out["distilled_description"].fillna("")
+    )
+
+    return out
