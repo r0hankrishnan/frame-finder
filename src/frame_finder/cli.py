@@ -103,7 +103,7 @@ def main() -> None:
 
     if args.no_parse:
         print(
-            "Query parsing diabled - raw query will be used for both BM25 and semantic search.\n"
+            "Query parsing disabled - raw query will be used for both BM25 and semantic search.\n"
         )
 
     anthropic_adapter = AnthropicAdapter()
@@ -117,7 +117,7 @@ def main() -> None:
     engine.setup()
     logger.info("Engine created and set up. Search capabilities ready.")
 
-    print("Frame Finder CLI - enter a query, or 'quit` to exit.\n")
+    print("Frame Finder CLI - enter a query, or 'quit' to exit.\n")
 
     while True:
         query = input("\nWhat type of racquet are you looking for?\n").strip()
