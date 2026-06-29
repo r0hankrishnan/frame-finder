@@ -10,7 +10,7 @@ import sys
 
 import pandas as pd
 
-from .config import BASE_URL, BRAND_PATHS, EXPECTED_SPEC_KEYS, SESSION
+from frame_finder.config import BASE_URL, BRAND_PATHS, EXPECTED_SPEC_KEYS, SESSION
 
 
 def scrape_tw_racquets(
