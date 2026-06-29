@@ -16,7 +16,11 @@ dependencies = [
     "pydantic",
     "sentence-transformers",
     "bm25s",
+    "tabulate"
 ]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[project.scripts]
+frame-finder = "frame_finder.cli:main"
