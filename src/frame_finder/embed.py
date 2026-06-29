@@ -6,12 +6,15 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
 
 logger = logging.getLogger(__name__)
 
 
 def instantiate_embedding_model(model_name: str) -> SentenceTransformer:
+    logger.info(f"Instantiating {model_name}...")
     model = SentenceTransformer(model_name)
+    logger.info(f"{model_name} instantiated!")
     return model
 
 
@@ -77,13 +80,13 @@ def embed_corpus(
         logger.error(msg)
         raise AssertionError(msg)
 
-    embeddings = embedding_model.encode(text_corpus, convert_to_numpy=True)
+    corpus_embeddings = embedding_model.encode(text_corpus, convert_to_numpy=True)
 
-    return id_corpus, embeddings
+    return id_corpus, corpus_embeddings
 
 
 def save_embeddings(
-    path: Path | str, embedding_corpus: tuple[list[str], np.ndarray]
+    path: Path | str, corpus_tuple: tuple[list[str], np.ndarray]
 ) -> None:
     """Saves a joint `.npz` file with two arrays. One array contains the racquet_id values. The other
     array contains the embedding vectors corresponding to the ids.
@@ -96,13 +99,13 @@ def save_embeddings(
         AssertionError: Raised if length of racquet_id list and 0th dimension of embedding array are not equal (indicates mismatch
         between ids and descriptions).
     """
-    racquet_ids = embedding_corpus[0]
-    distilled_description_embeddings = embedding_corpus[1]
+    racquet_ids = corpus_tuple[0]
+    corpus_embeddings = corpus_tuple[1]
 
-    if len(racquet_ids) != distilled_description_embeddings.shape[0]:
+    if len(racquet_ids) != corpus_embeddings.shape[0]:
         msg = (
             f"Critical length mismatch. Both lists must be the same length. "
-            f"Got racquet_id list as length {len(racquet_ids)} and distilled_description list as length {distilled_description_embeddings.shape[0]}."
+            f"Got racquet_id list as length {len(racquet_ids)} and distilled_description list as length {corpus_embeddings.shape[0]}."
         )
         logger.error(msg)
         raise AssertionError(msg)
@@ -110,5 +113,52 @@ def save_embeddings(
     np.savez(
         path,
         racquet_ids=np.array(racquet_ids),
-        embeddings=distilled_description_embeddings,
+        embeddings=corpus_embeddings,
     )
+
+
+def load_embeddings(path_to_embeddings: Path | str) -> tuple[np.ndarray, np.ndarray]:
+    ids_and_embeddings = np.load(path_to_embeddings)
+    ids = ids_and_embeddings["racquet_ids"]
+    embeddings = ids_and_embeddings["embeddings"]
+
+    return ids, embeddings
+
+
+def embed_query(query: str, embedding_model: SentenceTransformer) -> np.ndarray:
+    query_embedding = embedding_model.encode(query, convert_to_numpy=True)
+
+    return query_embedding
+
+
+def semantic_search(
+    query_embedding: np.ndarray,
+    racquet_ids: list[str] | np.ndarray,
+    corpus_embeddings: np.ndarray,
+) -> list[str]:
+    if query_embedding.shape[0] != corpus_embeddings.shape[1]:
+        msg = "Lengths of query and corpus embeddings do not match. Make sure to use the same embedding model for both parts."
+        logger.error(msg)
+        raise ValueError(msg)
+
+    if isinstance(racquet_ids, np.ndarray):
+        racquet_ids = racquet_ids.tolist()
+
+    if len(racquet_ids) != corpus_embeddings.shape[0]:
+        msg = (
+            f"Critical length mismatch. Both lists must be the same length. "
+            f"Got racquet_id list as length {len(racquet_ids)} and distilled_description list as length {corpus_embeddings.shape[0]}."
+        )
+        logger.error(msg)
+        raise AssertionError(msg)
+
+    similarity_vector = cosine_similarity(
+        X=query_embedding.reshape(1, -1), Y=corpus_embeddings
+    )[
+        0
+    ]  # shape: (1, corpus_embeddings.shape[0])
+    sorted_indices = np.argsort(similarity_vector)[::-1]
+
+    return [
+        racquet_ids[int(idx)] for idx in sorted_indices
+    ]  # added int() to satisfy type checker --> confirms that idx is an int index value
