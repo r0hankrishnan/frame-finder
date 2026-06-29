@@ -39,4 +39,4 @@ if __name__ == "__main__":
         path=PROCESSED_DIR / "embedding_artifacts.npz",
         corpus_tuple=ids_and_embeddings_tuple,
     )
-    final_df.to_csv(PROCESSED_DIR / "racquet_data_artifact.csv")
+    final_df.to_csv(PROCESSED_DIR / "racquet_data_artifact.csv", index=False)
