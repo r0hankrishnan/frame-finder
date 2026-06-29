@@ -22,4 +22,4 @@ if __name__ == "__main__":
     raw_data = pd.read_csv(RAW_DATA_PATH)
     cleaned_data = clean_raw_data(df=raw_data)
 
-    cleaned_data.to_csv(CLEANED_DATA_PATH)
+    cleaned_data.to_csv(CLEANED_DATA_PATH, index=False)
