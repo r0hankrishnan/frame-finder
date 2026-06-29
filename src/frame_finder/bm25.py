@@ -74,3 +74,23 @@ def instantiate_and_index_bm25(corpus: tuple[list[str], list[str]]) -> bm25s.BM2
     retriever.index(bm25s.tokenize(keyword_texts))
 
     return retriever
+
+
+def bm25_search(query: str, retriever: bm25s.BM25) -> list[str]:
+    if retriever.corpus is None:
+        msg = (
+            "Retriever corpus returning None. This means the retreiver was not intialized correctly."
+            "Rerun `instantiate_and_index_bm25()`."
+        )
+        logger.error(msg)
+        raise ValueError(msg)
+
+    k = len(retriever.corpus)
+
+    sorted_ids, scores = retriever.retrieve(
+        bm25s.tokenize(query), k=k
+    )  # Leaving scores unused in case it becomes useful later
+
+    return sorted_ids[
+        0
+    ]  # Results is always a nested list so need to index in one layer
