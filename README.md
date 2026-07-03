@@ -1,5 +1,5 @@
 # frame-finder
-> Work in progress
+> Work in progress -- soon to be deployed!
 > This is a showcase and learning project. Please respect TW's terms of service
 
 **Hybrid search over tennis racquets** built on scraped [Tennis Warehouse](https://www.tennis-warehouse.com/) data.
