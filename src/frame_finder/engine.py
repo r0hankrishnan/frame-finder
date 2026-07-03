@@ -2,7 +2,7 @@
 
 from pathlib import Path
 from enum import Enum
-from typing import NamedTuple
+from typing import NamedTuple, Any, cast
 import logging
 
 from frame_finder.bm25 import create_corpus, instantiate_and_index_bm25, bm25_search
@@ -205,6 +205,14 @@ class RacquetSearchEngine:
             parsed_query=resolved_query.parsed_query,
             parsing_status=resolved_query.parsing_status,
         )
+    
+    def get_racquet(self, racquet_id: str, cols_to_get: list[str]) -> dict[str, Any]:
+        
+        return cast(dict[str, Any], 
+                    self.racquet_df[self.racquet_df["racquet_id"] == racquet_id][cols_to_get]
+                    .iloc[0]
+                    .where(pd.notna, other=None)
+                    .to_dict())
 
     def _resolve_query(
         self, query: str, skip_parsing: bool, llm_adapter: LLMAdapter
