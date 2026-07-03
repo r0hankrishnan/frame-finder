@@ -14,28 +14,36 @@ from frame_finder.engine import RacquetSearchEngine
 from frame_finder.config import EMBEDDING_MODEL_NAME
 from frame_finder.adapters import AnthropicAdapter
 
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     load_dotenv()
-    ROOT = Path(__file__).resolve().parents[1]    
+    ROOT = Path(__file__).resolve().parents[1]
     ARTIFACTS_PATH = ROOT / "data" / "processed"
-    
+
     init_db()
-    
+
     anthropic_adapter = AnthropicAdapter()
-    engine = RacquetSearchEngine(path_to_artifacts=ARTIFACTS_PATH, embedder_name=EMBEDDING_MODEL_NAME, llm_adapter=anthropic_adapter)
-    
+    engine = RacquetSearchEngine(
+        path_to_artifacts=ARTIFACTS_PATH,
+        embedder_name=EMBEDDING_MODEL_NAME,
+        llm_adapter=anthropic_adapter,
+    )
+
     engine.setup()
     app.state.engine = engine
     yield
 
+
 app = FastAPI(lifespan=lifespan)
 
 app.state.limiter = limiter
-app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler) #type:ignore
+app.add_exception_handler(
+    RateLimitExceeded, _rate_limit_exceeded_handler
+)  # type:ignore
 
-app.include_router(search.router) 
+app.include_router(search.router)
 app.include_router(health.router)
-app.include_router(feedback.router) 
+app.include_router(feedback.router)
 
 app.mount("/", StaticFiles(directory="frontend", html=True), name="static")

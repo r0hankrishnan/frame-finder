@@ -126,7 +126,10 @@ def load_embeddings(path_to_embeddings: Path | str) -> tuple[np.ndarray, np.ndar
 
 
 def embed_query(query: str, embedding_model: SentenceTransformer) -> np.ndarray:
-    query_embedding = embedding_model.encode(query, convert_to_numpy=True, )
+    query_embedding = embedding_model.encode(
+        query,
+        convert_to_numpy=True,
+    )
 
     return query_embedding
 
