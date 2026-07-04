@@ -3,7 +3,7 @@
    ============================================================ */
 
 // DEV: set true to skip AI parsing and save API credits. Set false before deploying.
-const DEV_SKIP_PARSING = true;
+const DEV_SKIP_PARSING = false;
 
 // ── Example queries ───────────────────────────────────────────
 const EXAMPLES = [
