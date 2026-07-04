@@ -4,33 +4,31 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Frame Finder | Describe your game, find your frame</title>
-  <meta name="description" content="Frame Finder is a natural-language search tool for tennis
-  racquets. Describe how you play in plain English and get ranked frame recommendations from Tennis
-  Warehouse's full catalogue."/>
-  <link rel="canonical" href="DEPLOYED_URL">
+  <!-- Primary meta -->
+  <title>Frame Finder — Describe your game, find your frame</title>
+  <meta name="description" content="Frame Finder is a natural-language search tool for tennis racquets. Describe how you play in plain English and get ranked frame recommendations from Tennis Warehouse's full catalogue." />
+  <link rel="canonical" href="YOUR_DEPLOYED_URL" />
 
-  <link rel="apple-touch-icon" sizes="180x180" href="favicon/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon/favicon-16x16.png">
-  <link rel="manifest" href="/site.webmanifest">
+  <!-- Favicon -->
+  <link rel="icon" type="image/png" href="/favicon.png" />
 
-  <meta property="og:type" content="website"/>
-  <meta property="og:title" content="Frame Finder | Describe your game, find your frame."/>
-  <meta property="og:description" content="Describe how you play in plai English and get ranked tennis racquet
-  recommendations. Hybrid semantic search over Tennis Warehouse's full catalogue."/>
-  <meta property="og:image" content="YOUR_DEPLOYED_URL/og-image.png"/>
-  <meta property="og:url" content="YOUR_DEPLOYED_URL"/>
+  <!-- Open Graph (Facebook, LinkedIn, Discord, iMessage) -->
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Frame Finder — Describe your game, find your frame" />
+  <meta property="og:description" content="Describe how you play in plain English and get ranked tennis racquet recommendations. Hybrid semantic search over Tennis Warehouse's full catalogue." />
+  <meta property="og:image" content="YOUR_DEPLOYED_URL/og-image.png" />
+  <meta property="og:url" content="YOUR_DEPLOYED_URL" />
 
-  <meta name="twitter:card" content="summary_large_image"/>
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image" />
   <meta name="twitter:title" content="Frame Finder | Describe your game, find your frame" />
   <meta name="twitter:description" content="Describe how you play in plain English and get ranked tennis racquet recommendations." />
-  <meta name="twitter:image" content="YOUR_DEPLOYED_URL/org-image.png" />
+  <meta name="twitter:image" content="YOUR_DEPLOYED_URL/og-image.png" />
 
+  <!-- Fonts -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet" />
-
   <link rel="stylesheet" href="style.css" />
 </head>
 <body>
@@ -112,7 +110,7 @@
         <h1 class="search-headline">Describe your game.<br>We'll find you a frame.</h1>
         <p class="search-sub">
           Tell us how you play — your level, style, what you're looking for —
-          and we'll surface the frames that fit.
+          and we'll surface the tennis racquets that fit.
         </p>
 
         <div class="search-form">
@@ -167,13 +165,18 @@
             <p class="results-label" id="results-label"></p>
             <p class="results-explainer">
               Top picks from Tennis Warehouse's full racquet catalogue, ranked by relevance to your query.
-              Mark the ones that fit — your feedback helps improve results.
+              Mark the ones that fit. Your feedback helps improve results.
             </p>
           </div>
         </div>
 
         <!-- Grid -->
         <div class="card-grid" id="card-grid"></div>
+
+        <!-- Post-results feedback prompt -->
+        <div class="results-feedback hidden" id="results-feedback">
+          <p>Didn't find the right frame? <a href="https://tally.so/r/Zjy2Vy" target="_blank" rel="noopener">Tell us what you were looking for →</a></p>
+        </div>
 
       </div>
     </section>
@@ -185,6 +188,8 @@
         <span>Data from <a href="https://www.tennis-warehouse.com" target="_blank" rel="noopener">Tennis Warehouse</a></span>
         <span class="footer-dot">·</span>
         <span>Built by <a href="https://r0hankrishnan.github.io/" target="_blank" rel="noopener">Rohan Krishnan</a></span>
+        <span class="footer-dot">·</span>
+        <span><a href="https://tally.so/r/Zjy2Vy" target="_blank" rel="noopener">Feedback</a></span>
       </div>
     </footer>
 

@@ -778,6 +778,33 @@ kbd {
 .card-tw-link:hover { color: var(--text-1); text-decoration: none; }
 
 /* ============================================================
+   POST-RESULTS FEEDBACK PROMPT
+   ============================================================ */
+.results-feedback {
+  margin-top: 2.5rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--border);
+  text-align: center;
+}
+
+.results-feedback p {
+  font-size: .8125rem;
+  color: var(--text-3);
+}
+
+.results-feedback a {
+  color: var(--text-1);
+  font-weight: 500;
+  border-bottom: 1px solid var(--border-mid);
+  transition: border-color var(--t-fast);
+  text-decoration: none;
+}
+.results-feedback a:hover {
+  border-color: var(--text-1);
+  text-decoration: none;
+}
+
+/* ============================================================
    FOOTER
    ============================================================ */
 .footer {

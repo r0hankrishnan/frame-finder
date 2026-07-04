@@ -27,6 +27,7 @@ const resultsLoading  = document.getElementById('results-loading');
 const resultsHd       = document.getElementById('results-hd');
 const resultsLabel    = document.getElementById('results-label');
 const cardGrid        = document.getElementById('card-grid');
+const resultsFeedback = document.getElementById('results-feedback');
 const modalOverlay    = document.getElementById('modal-overlay');
 const modalClose      = document.getElementById('modal-close');
 
@@ -141,6 +142,7 @@ async function handleSearch() {
   resultsSection.classList.remove('hidden');
   resultsLoading.classList.remove('hidden');
   resultsHd.classList.add('hidden');
+  resultsFeedback.classList.add('hidden');
   cardGrid.innerHTML = '';
 
   resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -199,6 +201,8 @@ function renderResults(data) {
       }, 80 + i * 30);
     });
   });
+
+  resultsFeedback.classList.remove('hidden');
 }
 
 function buildCard(r, isTop) {
