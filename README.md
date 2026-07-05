@@ -187,4 +187,5 @@ A few highlights:
 
 Racquet data is sourced from [Tennis Warehouse](https://www.tennis-warehouse.com).
 Frame Finder is an independent portfolio project and is not affiliated with Tennis
-Warehouse.
+Warehouse. The MIT license only applies to the architecture and web app **not** the
+data sourced from Tennis Warehouse. 
