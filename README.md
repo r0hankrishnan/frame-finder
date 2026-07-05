@@ -9,8 +9,6 @@ frames that fit, ranked by relevance.
 
 **Live app:** [frame-finder.up.railway.app](https://frame-finder.up.railway.app/)
 
-<!-- Replace with a screenshot or the og-image once deployed -->
-<!-- ![Frame Finder](frontend/og-image.png) -->
 ![og-image.png](./frontend/og-image.png)
 
 ---
@@ -23,8 +21,8 @@ Warehouse's full catalogue (> 300 adult frames across 11 brands), each with a ma
 score, specs, description, and a link to the product listing.
 
 The core problem Frame Finder aims to solve: racquet search is normally either rigid
-(exact-match spec filters) or based on what your favorite player endorses. True real racquet nerds might scour online forums and YouTube videos to try and find content that properly translates their specfic requirements into tangible racquet recommendations. Regardless, there is no easily accessible way to handle the way players actually think about racquets — in terms of *feel* and
-*playstyle*. Frame Finder uses a hybrid retrieval pipeline to bridge natural-language
+(exact-match spec filters) or based on what your favorite player endorses. Racquet nerds scour forums and YouTube to translate their requirements into recommendations, but there's no easy, direct way to search by feel and playstyle. 
+Frame Finder uses a hybrid retrieval pipeline to bridge natural-language
 intent and the underlying racquet data.
 
 ---
@@ -158,7 +156,7 @@ frame-finder "control-oriented racquet for a one-handed backhand"
 
 ## Design decisions
 
-I tried using an Architecture Decision Record (ADR) to record each significatn decision with its context, alternatives considered, and why they were rejected. See [`docs/decisions/`](docs/decisions/).
+I used an Architecture Decision Record (ADR) to record each significant decision with its context, alternatives considered, and why they were rejected. See [`docs/decisions/`](docs/decisions/).
 
 A few highlights:
 
