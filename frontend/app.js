@@ -129,6 +129,39 @@ searchInput.addEventListener('keydown', (e) => {
 
 searchBtn.addEventListener('click', handleSearch);
 
+// ── Loading messages ─────────────────────────────────────────
+const LOADING_MESSAGES = [
+  "Reading between the lines of your game...",
+  "Weighing power against control...",
+  "Cross-checking specs against feel...",
+  "Narrowing down the field...",
+  "Comparing frames that fit your style...",
+];
+
+const loadingMessage = document.getElementById('loading-message');
+let loadingMsgIdx = 0;
+let loadingMsgTimer = null;
+
+function startLoadingMessages() {
+  loadingMsgIdx = 0;
+  loadingMessage.textContent = LOADING_MESSAGES[loadingMsgIdx];
+  loadingMsgTimer = setInterval(cycleLoadingMessage, 1800);
+}
+
+function cycleLoadingMessage() {
+  loadingMessage.classList.add('fading');
+  setTimeout(() => {
+    loadingMsgIdx = (loadingMsgIdx + 1) % LOADING_MESSAGES.length;
+    loadingMessage.textContent = LOADING_MESSAGES[loadingMsgIdx];
+    loadingMessage.classList.remove('fading');
+  }, 350);
+}
+
+function stopLoadingMessages() {
+  clearInterval(loadingMsgTimer);
+  loadingMsgTimer = null;
+}
+
 // ── Search ────────────────────────────────────────────────────
 async function handleSearch() {
   const query = searchInput.value.trim();
@@ -144,6 +177,7 @@ async function handleSearch() {
   resultsHd.classList.add('hidden');
   resultsFeedback.classList.add('hidden');
   cardGrid.innerHTML = '';
+  startLoadingMessages();
 
   resultsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
@@ -167,6 +201,7 @@ async function handleSearch() {
     renderError(err);
   } finally {
     resultsLoading.classList.add('hidden');
+    stopLoadingMessages();
   }
 }
 

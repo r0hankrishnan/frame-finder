@@ -221,6 +221,62 @@ avoids the accent-heavy look that signals AI-generated design. Idea was to showc
 
 ---
 
+## ADR: Move DB write to non blocking process in `/search`
+
+**Status:** Accepted
+
+**Context:** Noticed that search results were taking over 10 seconds to populate when 
+run on actual web app. After investigating, realized that `/search` route didn't return 
+results until 1 row was written to search table and 20 rows were written to search_results table. 
+Based on FastAPI documentation, `BackgroundTasks` can be used to move a process like this into a 
+special task that doesn't block the return value of the `/search` route.
+
+**Decision:** Created `log_search_results` function and add function as a background task using
+`background_tasks.add_task`. Also refactored write to use pre-defined tuples for both the 1 row
+searches table write and the batched 20 row search_results table write. Then refactored `/search`
+route to construct a `searches_row` and a `search_results_row` tuple to pass into the background task.
+
+**Why:** A background task allows the `/search` route to return the `RacquetCard` object while the DB
+write completes in the background. This allows the user to see their results without too much latency.
+With a reasonable `try` and `except` design, we can log failed DB writes. In the future, building in some
+type of fall back or retry behavior for the writes would make sense to safeguard against data loss. Something
+like this would only be worth the time if we observe regular failed writes. 
+
+**Experiment:** I conducted an experiment where I tested the return latency of the `/search` route in both
+the old and new designs across 5 runs. Here are the results:
+
+```
+DB write timing improvement experiment
+
+JS sleep: 0.4s
+Both tables emptied before each test
+Query cycled between each search
+skip_dev_parsing = false
+
+Old: 
+Run 1 — search = 3.177377s | total = 3.442085s 
+Run 2 — search = 1.639590s | total = 1.890269s  
+Run 3 — search = 2.542051s | total = 2.802274s
+Run 4 — search = 1.038668s | total = 1.381305s
+Run 5 — search = 1.456268s | total = 1.707505s
+
+New:
+Run 1 — search = 3.169713 | total = 3.181744
+Run 2 — search = 1.751403 | total = 1.762516
+Run 3 — search = 1.236623 | total = 1.247692  
+Run 4 — search = 1.747725 | total = 1.757104
+Run 5 — search = 1.225161 | total = 1.235720
+
+Average time between search and API return (original): 0.273897s
+Average time between search and API return (background tasks): 0.01083s
+-96.05% decrease in time between search and API return
+```
+
+We see a stark decrease in the latency between the `RacquetSearchEngine`'s completion of the search task and the actual `/search` route returning a
+`RacquetCard` to the client. 
+
+---
+
 ## v2 direction (recorded, not decided, pending eval data)
 
 **Structured attribute retrieval.** The corpus already contains unused structured
@@ -300,3 +356,5 @@ caching only if traffic and repeated-query rate justify it.
 distillation (both faithful-extraction, both fine at temperature=0), so hardcoding
 temperature=0 in the adapter is acceptable. If a future task needs variety, I could promote
 `temperature` to a `complete()` parameter rather than hardcoding.
+
+---

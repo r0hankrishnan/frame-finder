@@ -518,6 +518,52 @@ kbd {
   gap: 1rem;
 }
 
+/* Loading message */
+.results-loading {
+  position: relative;
+  padding: 1rem 0;
+}
+
+.loading-status {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  display: flex;
+  align-items: center;
+  gap: .5rem;
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  box-shadow: var(--shadow-card);
+  padding: .5rem 1rem;
+  max-width: 280px;
+}
+
+.loading-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--text-1);
+  flex-shrink: 0;
+  animation: loading-dot-pulse 1.2s ease-in-out infinite;
+}
+
+@keyframes loading-dot-pulse {
+  0%, 100% { opacity: .3; transform: scale(.8); }
+  50%      { opacity: 1;  transform: scale(1); }
+}
+
+.loading-message {
+  font-size: .8125rem;
+  font-weight: 500;
+  color: var(--text-2);
+  transition: opacity 300ms ease;
+}
+
+.loading-message.fading { opacity: 0; }
+
+/* Loading cards */
 .loading-skeleton-card {
   height: 360px;
   background: var(--white);
