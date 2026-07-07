@@ -29,8 +29,13 @@ CARD_COLS = [
 ]
 TOP_N = 20
 
-def log_search_request(searches_row: tuple[str, str, Literal['success', 'skipped', 'failed'], str | None, str | None, str], 
-                       search_results_rows: list[tuple[str, str, str, int, None]]) -> None:
+
+def log_search_request(
+    searches_row: tuple[
+        str, str, Literal["success", "skipped", "failed"], str | None, str | None, str
+    ],
+    search_results_rows: list[tuple[str, str, str, int, None]],
+) -> None:
     """Function that opens a DB and cursor connection, writes a single row to the searches table
     to record the key query metadata, then writes 20 rows to the search_results table where each row
     represents one returned racquet.
@@ -47,29 +52,31 @@ def log_search_request(searches_row: tuple[str, str, Literal['success', 'skipped
         # Get connection and cursor
         con = psycopg2.connect(os.environ["DATABASE_URL"])
         cur = con.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        
+
         # Write to searches
-        cur.execute("INSERT INTO searches VALUES (%s, %s, %s, %s, %s, %s)",
-                    searches_row)
-    
+        cur.execute(
+            "INSERT INTO searches VALUES (%s, %s, %s, %s, %s, %s)", searches_row
+        )
+
         # Write to impressions as a batch of 20
         psycopg2.extras.execute_values(
             cur=cur,
             sql="INSERT INTO search_results (result_id, search_id, racquet_id, rank, liked) VALUES %s",
-            argslist=search_results_rows)
-        
-        con.commit() # send to DB
-    
+            argslist=search_results_rows,
+        )
+
+        con.commit()  # send to DB
+
     except Exception:
         logger.exception("Failed to log search in database")
-        
+
     finally:
         if cur is not None:
             cur.close()
-            
+
         if con is not None:
             con.close()
-        
+
 
 @router.post("/search")
 @limiter.limit("10/minute")
@@ -84,13 +91,22 @@ async def search(
     raw_query = body.query
 
     result = await run_in_threadpool(engine.search, body.query, body.skip_parse)
-    parsing_status = result.parsing_status.value  # now it's just a Literal of the ENUM strings not the ENUM type itself
+    parsing_status = (
+        result.parsing_status.value
+    )  # now it's just a Literal of the ENUM strings not the ENUM type itself
 
     semantic_query = result.parsed_query.semantic_query if result.parsed_query else None
     keyword_query = result.parsed_query.keyword_query if result.parsed_query else None
 
-    searches_row = (search_id, raw_query, parsing_status, semantic_query, keyword_query, now)
-    
+    searches_row = (
+        search_id,
+        raw_query,
+        parsing_status,
+        semantic_query,
+        keyword_query,
+        now,
+    )
+
     cards = []
     search_results_rows = []
     top_score = result.fused_result[0][1]
@@ -115,7 +131,11 @@ async def search(
         search_results_rows.append((result_id, search_id, racquet_id, rank, None))
 
     # Write to DB in the background
-    background_tasks.add_task(log_search_request, searches_row = searches_row, search_results_rows = search_results_rows)
+    background_tasks.add_task(
+        log_search_request,
+        searches_row=searches_row,
+        search_results_rows=search_results_rows,
+    )
 
     return SearchResponse(
         search_id=search_id, parsing_status=result.parsing_status, results=cards
